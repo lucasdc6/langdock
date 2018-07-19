@@ -1,5 +1,6 @@
 #!/bin/bash
 
-export LANGDOCK=php
+export LANGDOCK=rb
+export LANGDOCK_REPOSITORY=ruby
 mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
 $LANGDOCKPATH/libexec/langdock $@

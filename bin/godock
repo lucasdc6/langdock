@@ -1,5 +1,6 @@
 #!/bin/bash
 
-export LANGDOCK=php
+export LANGDOCK=go
+export LANGDOCK_REPOSITORY=golang
 mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
 $LANGDOCKPATH/libexec/langdock $@

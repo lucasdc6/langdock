@@ -1,5 +1,5 @@
 #!/bin/bash
 
-export LANGDOCK=php
+export LANGDOCK=java
 mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
 $LANGDOCKPATH/libexec/langdock $@
