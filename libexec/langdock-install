@@ -40,12 +40,15 @@ function upsearch {
 TEMP=`getopt -o l --long list -n $PROG -- "$@"`
 eval set -- "$TEMP"
 
+LANGDOCK_REPOSITORY=${LANGDOCK_REPOSITORY:-$LANGDOCK}
+
 # Avaiables repositories
 if [ ! -f "$MAIN_PATH/etc/$LANGDOCK/repositories" ]
 then
-  echo -e "$MAIN_PATH/etc/$LANGDOCK/repositories missing, default value setted\nDefault value: $LANGDOCK\n"
-  echo "$LANGDOCK" > "$MAIN_PATH/etc/$LANGDOCK/repositories"
+  echo -e "$MAIN_PATH/etc/$LANGDOCK/repositories missing, default value setted\nDefault value: $LANGDOCK_REPOSITORY\n"
+  echo "$LANGDOCK_REPOSITORY" > "$MAIN_PATH/etc/$LANGDOCK/repositories"
 fi
+
 LANGDOCK_IMAGES=( $(cat $MAIN_PATH/etc/$LANGDOCK/repositories) )
 
 # Function to install a langdock version

@@ -26,7 +26,7 @@ LANGDOCK_IMAGES=( $(cat $MAIN_PATH/etc/$LANGDOCK/repositories) )
 function show_versions {
   for IMAGE in "${LANGDOCK_IMAGES[@]}"
   do
-    docker images | awk -v image=$IMAGE '($1 == image) {print $1;}'
+    docker images | awk -v image=$IMAGE '($1 == image) {print $1":"$2;}'
   done | tee $MAIN_PATH/etc/$LANGDOCK/versions
 }
 

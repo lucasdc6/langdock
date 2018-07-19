@@ -76,7 +76,7 @@ if [ -z "$print" ]; then
   exit 1
 fi
 
-mkdir -p "${LANGDOCK_ROOT}/"{shims,versions}
+mkdir -p "${LANGDOCKPATH}/etc"
 
 case "$shell" in
 fish )
