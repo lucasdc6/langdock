@@ -3,7 +3,8 @@
 set -e
 
 if [ -z "$LANGDOCK" ]; then
-  echo "You need to specify a languaje in \$LANGDOCK"
+  echo -e "Availables langdock languages:\n"
+  ls $LANGDOCKPATH/bin | grep dock | grep -vw langdock
   exit 1
 fi
 
