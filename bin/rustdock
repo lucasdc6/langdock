@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export LANGDOCK=rust
+mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
+$LANGDOCKPATH/libexec/langdock $@

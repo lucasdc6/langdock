@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export LANGDOCK=perl
+mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
+$LANGDOCKPATH/libexec/langdock $@

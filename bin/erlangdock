@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export LANGDOCK=erlang
+mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
+$LANGDOCKPATH/libexec/langdock $@
