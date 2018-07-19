@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Usage: ${LANGDOCK}dock completions <command> [arg1 arg2...]
+
+set -e
+[ -n "$LANGDOCK_DEBUG" ] && set -x
+
+COMMAND="$1"
+if [ -z "$COMMAND" ]; then
+  langdock-help --usage completions >&2
+  exit 1
+fi
+
+# Provide langdock completions
+if [ "$COMMAND" = "--complete" ]; then
+  exec langdock-commands
+fi
+
+COMMAND_PATH="$(command -v "langdock-$COMMAND" || command -v "langdock-sh-$COMMAND")"
+
+# --help is provided automatically
+#echo --help
+
+if grep -iE "^([#%]|--|//) provide langdock completions" "$COMMAND_PATH" >/dev/null; then
+  shift
+  exec "$COMMAND_PATH" --complete "$@"
+fi

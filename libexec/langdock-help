@@ -2,7 +2,7 @@
 #
 # Summary: Display help for a command
 #
-# Usage: phpdock help [--usage] COMMAND
+# Usage: $LANGDOCK help [--usage] COMMAND
 #
 # Parses and displays help contents from a command's source file.
 #
@@ -13,26 +13,26 @@
 # documentation.
 
 set -e
-[ -n "$PHPDOCK_DEBUG" ] && set -x
+[ -n "$LANGDOCK_DEBUG" ] && set -x
 
-# Provide phpdock completions
+# Provide langdock completions
 if [ "$1" = "--complete" ]; then
   if [ $# -eq 1 ]; then
     echo --usage
     echo --help
-    exec phpdock-commands
+    exec langdock-commands
   fi
   exit 0
 fi
 
 if [ "$1" = "--help" ]; then
-  phpdock-help help
+  langdock-help help
   exit 0
 fi
 
 command_path() {
   local command="$1"
-  command -v phpdock-"$command" || command -v phpdock-sh-"$command" || true
+  command -v langdock-"$command" || command -v langdock-sh-"$command" || true
 }
 
 extract_initial_comment_block() {
@@ -74,7 +74,7 @@ collect_documentation() {
     }
 
     function escape(str) {
-      gsub(/[`\\$"]/, "\\\\&", str)
+      gsub(/[`\\"]/, "\\\\&", str)
       return str
     }
 
@@ -127,7 +127,7 @@ print_help() {
     if [ -n "$usage" ]; then
       echo "$usage"
     else
-      echo "Usage: phpdock ${command}"
+      echo "Usage: ${LANGDOCK}dock ${command}"
     fi
     if [ -n "$help" ]; then
       echo
@@ -153,16 +153,16 @@ if [ "$1" = "--usage" ]; then
   shift
 fi
 
-if [ -z "$1" ] || [ "$1" == "phpdock" ]; then
-  echo "Usage: phpdock <command> [<args>]"
-  echo "Version: `cat $PHPDOCK_ROOT/VERSION`"
+if [ -z "$1" ] || [ "$1" == "langdock" ]; then
+  echo "Usage: ${LANGDOCK}dock <command> [<args>]"
+  echo "Version: `cat $LANGDOCK_ROOT/VERSION`"
   [ -z "$usage" ] || exit
   echo
-  echo "Some useful phpdock commands are:"
+  echo "Some useful langdock commands are:"
   print_summaries commands local global shell install uninstall repositories version versions
   echo
-  echo "See \`phpdock help <command>' for information on a specific command."
-  echo "For full documentation, see: https://github.com/lucasdc6/phpdock#readme"
+  echo "See \`${LANGDOCK}dock help <command>' for information on a specific command."
+  echo "For full documentation, see: https://github.com/lucasdc6/langdock#readme"
 else
   command="$1"
   if [ -n "$(command_path "$command")" ]; then
@@ -172,7 +172,7 @@ else
       print_help "$command"
     fi
   else
-    echo "phpdock: no such command \`$command'" >&2
+    echo "${LANGDOCK}dock: no such command \`$command'" >&2
     exit 1
   fi
 fi

@@ -1,0 +1,33 @@
+#!/bin/bash
+# Summary: List all $LANGDOCK versions available to ${LANGDOCK}dock
+# Usage: ${LANGDOCK}dock versions
+#
+# List all $LANGDOCK versions available to ${LANGDOCK}dock
+#
+# More information at https://github.com/lucasdc6/langdock#readme
+
+set -e
+[ -n "$LANGDOCK_DEBUG" ] && set -x
+
+# Set config variables
+COMMAND=`basename $0 | cut -d- -f2`
+
+# Provide langdock completions
+if [ "$1" = "--complete" ]; then
+  if [ "$#" -eq 1 ]; then
+    echo --help
+  fi
+  exit 0
+fi
+
+LANGDOCK_IMAGES=( $(cat $MAIN_PATH/etc/$LANGDOCK/repositories) )
+
+# Function to get installed versions
+function show_versions {
+  for IMAGE in "${LANGDOCK_IMAGES[@]}"
+  do
+    docker images | awk -v image=$IMAGE '($1 == image) {print $1;}'
+  done | tee $MAIN_PATH/etc/$LANGDOCK/versions
+}
+
+show_versions

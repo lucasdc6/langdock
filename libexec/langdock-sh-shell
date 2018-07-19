@@ -2,26 +2,26 @@
 #
 # Summary: Set or show the shell-specific Ruby version
 #
-# Usage: phpdock shell <version> [-a|--apache]
-#        phpdock shell --unset [-a|--apache]
+# Usage: langdock shell <version> [-a|--apache]
+#        langdock shell --unset [-a|--apache]
 #
-# Sets a shell-specific Ruby version by setting the `PHP_CLI_DOCKER_IMAGE'
+# Sets a shell-specific Ruby version by setting the 'PHP_CLI_DOCKER_IMAGE'
 # environment variable in your shell. This version overrides local
 # application-specific versions and the global version.
 #
-# <version> should be a string matching a Ruby version known to phpdock.
+# <version> should be a string matching a Ruby version known to langdock.
 # The special version string `system' will use your default system Ruby.
-# Run `phpdock versions' for a list of available Ruby versions.
+# Run `langdock versions' for a list of available Ruby versions.
 #
 # When `-` is passed instead of the version string, the previously set
-# version will be restored. With `--unset`, the `PHP_CLI_DOCKER_IMAGE`
+# version will be restored. With `--unset`, the 'PHP_CLI_DOCKER_IMAGE'
 # environment variable gets unset, restoring the environment to the
-# state before the first `phpdock shell` call.
+# state before the first `langdock shell` call.
 
 set -e
-[ -n "$PHPDOCK_DEBUG" ] && set -x
+[ -n "$LANGDOCK_DEBUG" ] && set -x
 
-# Provide phpdock completions
+# Provide langdock completions
 if [ "$1" = "--complete" ]; then
   if echo $@ | grep "\-\-apache" > /dev/null; then
     cat $MAIN_PATH/etc/versions/apache
@@ -58,11 +58,11 @@ while true ; do
 done
 
 version="$1"
-shell="$(basename "${PHPDOCK_SHELL:-$SHELL}")"
+shell="$(basename "${LANGDOCK_SHELL:-$SHELL}")"
 
 function get_version {
   if [ -z "$1" ]; then
-    echo "phpdock: no shell-specific version configurated for $MODE" >&2
+    echo "langdock: no shell-specific version configurated for $MODE" >&2
   else
     if [ "$MODE" = "cli" ]; then
       echo 'echo "$PHP_CLI_DOCKER_IMAGE"'
@@ -109,7 +109,7 @@ if set -q PHP_CLI_DOCKER_IMAGE_OLD
     set -e PHP_CLI_DOCKER_IMAGE
   end
 else
-  echo "phpdock: PHP_CLI_DOCKER_IMAGE_OLD is not set" >&2
+  echo "langdock: PHP_CLI_DOCKER_IMAGE_OLD is not set" >&2
   false
 end
 EOS
@@ -127,7 +127,7 @@ if [ -n "\${PHP_CLI_DOCKER_IMAGE_OLD+x}" ]; then
     unset PHP_CLI_DOCKER_IMAGE
   fi
 else
-  echo "phpdock: PHP_CLI_DOCKER_IMAGE_OLD is not set" >&2
+  echo "langdock: PHP_CLI_DOCKER_IMAGE_OLD is not set" >&2
   false
 fi
 EOS
@@ -144,7 +144,7 @@ containsElement () {
 }
 
 # Make sure the specified version is installed.
-VERSIONS=(`phpdock-versions`)
+VERSIONS=(`langdock-versions`)
 if containsElement $version ${VERSIONS[@]}  >/dev/null; then
   if [ "$version" != "$PHP_CLI_DOCKER_IMAGE" ]; then
     case "$shell" in

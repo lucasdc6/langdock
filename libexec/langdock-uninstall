@@ -1,44 +1,42 @@
 #!/bin/bash
-# Summary: Uninstall a specific php version
-# Usage: phpdock uninstall
+# Summary: Uninstall a specific $LANGDOCK version
+# Usage: ${LANGDOCK}dock uninstall
 #
 #  -f  Attempt to remove the specified version without prompting
 #      for confirmation. If the version does not exist, do not
 #      display an error message.
 #
-# See `phpdock versions` for a complete list of installed versions.
+# See `${LANGDOCK}dock versions` for a complete list of installed versions.
 #
-# More information at https://github.com/lucasdc6/phpdock#readme
+# More information at https://github.com/lucasdc6/langdock#readme
 
 set -e
-[ -n "$PHPDOCK_DEBUG" ] && set -x
+[ -n "$LANGDOCK_DEBUG" ] && set -x
 
 # Set config variables
 COMMAND=`basename $0 | cut -d- -f2`
 
-# Provide phpdock completions
+# Provide langdock completions
 if [ "$1" = "--complete" ]; then
-  if echo $@ | grep "\-\-apache"; then
-    cat $MAIN_PATH/etc/apache_versions
-  else
-    cat $MAIN_PATH/etc/cli_versions
+  if echo $@ ; then
+    cat $MAIN_PATH/etc/$LANGDOCK/versions
   fi
   echo --force
   echo --help
   exit 0
 fi
 
-[ "$#" -eq 0 ] && phpdock-help $COMMAND && exit
+[ "$#" -eq 0 ] && langdock-help $COMMAND && exit
 
-# Function to uninstall a php version
+# Function to uninstall a langdock version
 # Arguments
-#   1: php version
-function uninstall_php_version {
+#   1: version
+function uninstall_langdock_version {
   docker image rm $1 -f
   echo -e "\n$1 removed\n"
-  VERSIONS=( `phpdock-versions` )
-  ACTUAL_VERSION=`phpdock-global || true`
-  [ "$ACTUAL_VERSION" = "$1" ] && phpdock-global ${VERSIONS[0]}
+  VERSIONS=( `langdock-versions` )
+  ACTUAL_VERSION=`langdock-global || true`
+  [ "$ACTUAL_VERSION" = "$1" ] && langdock-global ${VERSIONS[0]}
   exit 0
 }
 
@@ -55,12 +53,12 @@ function createmenu {
     elif [ 1 -le "$REPLY" ] && [ "$REPLY" -le $(($#-1)) ];
     then
       echo "You selected $option which is option $REPLY"
-      [ "$OPTIONS" = "-f"  ] && ( echo "Removing docker image.."; uninstall_php_version $option; )
+      [ "$OPTIONS" = "-f"  ] && ( echo "Removing docker image.."; uninstall_langdock_version $option; )
       echo "Are you shure?"
       select response in yes no; do
         if [ "$response" = "yes" ]; then
           echo "Removing docker image.."
-          uninstall_php_version $option
+          uninstall_langdock_version $option
         elif [ "$response" = "no" ]; then
           echo "Exiting..."
         fi
@@ -88,11 +86,11 @@ while true ; do
   esac
 done
 
-[ "$OPTIONS" = "-f" ] && uninstall_php_version $1 && exit 0
+[ "$OPTIONS" = "-f" ] && uninstall_langdock_version $1 && exit 0
 
-VERSION=(`phpdock versions | grep "$1" || true`)
+VERSION=(`langdock versions | grep "$1" || true`)
 
-[ ${#VERSION[@]} -eq 0 ] && ( echo "phpdock: version \`$1' not installed"; exit 1 )
+[ ${#VERSION[@]} -eq 0 ] && ( echo "${LANGDOCK}dock: version \`$1' not installed"; exit 1 )
 
 VERSION=(${VERSION[@]} "exit")
 createmenu ${VERSION[@]}

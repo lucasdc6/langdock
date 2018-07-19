@@ -1,0 +1,38 @@
+#!/bin/bash
+# Summary: Shows the currently selected $LANGDOCK version
+
+set -e
+[ -n "$LANGDOCK_DEBUG" ] && set -x
+
+# Set config variables
+COMMAND=`basename $0 | cut -d- -f2`
+
+# Provide langdock completions
+if [ "$1" = "--complete" ]; then
+  if [ "$#" -eq 1 ]; then
+    echo --help
+  fi
+  exit 0
+fi
+
+function upsearch {
+  slashes=${PWD//[^\/]/}
+  directory="$PWD"
+  for (( n=${#slashes}; n>0; --n ))
+  do
+    test -e "$directory/$1" && echo "$directory/$1" && return
+    directory="$directory/.."
+  done
+}
+
+if [ -n "${!LANGDOCK_VAR}" ]; then
+  echo ${!LANGDOCK_VAR}
+elif langdock local $PARAM > /dev/null; then
+  LANGDOCKVERSION=`upsearch ".$LANGDOCK-version"`
+  cat $LANGDOCKVERSION
+elif langdock global $PARAM > /dev/null; then
+  cat $LANGDOCKPATH/etc/$LANGDOCK/version
+else
+  echo "No $LANGDOCK version setted"
+  exit 1
+fi

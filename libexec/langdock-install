@@ -1,0 +1,152 @@
+#!/bin/bash
+# Summary: Install a $LANGDOCK docker image from repositories
+# Usage: ${LANGDOCK}dock install <version> [-a/--apache]
+#        ${LANGDOCK}dock install -l/--list [-a/--apache]
+#
+#  -l/--list   List all available versions
+#              By default show $LANGDOCK versions
+#
+# <version> should be a string matching a $LANGDOCK version known to $LANGDOCK
+# repositories
+# see '${LANGDOCK}dock repositories --list'
+#
+# More information at https://github.com/lucasdc6/langdock#readme
+
+set -e
+[ -n "$LANGDOCK_DEBUG" ] && set -x
+
+# Set config variables
+COMMAND=`basename $0 | cut -d- -f2`
+
+# Provide langdock completions
+if [ "$1" = "--complete" ]; then
+  echo --list
+  echo --help
+  exit 0
+fi
+
+function upsearch {
+  slashes=${PWD//[^\/]/}
+  directory="$PWD"
+  for (( n=${#slashes}; n>0; --n ))
+  do
+    test -e "$directory/$1" && echo "$directory/$1" && return
+    directory="$directory/.."
+  done
+}
+
+
+# Config getopt
+TEMP=`getopt -o l --long list -n $PROG -- "$@"`
+eval set -- "$TEMP"
+
+# Avaiables repositories
+if [ ! -f "$MAIN_PATH/etc/$LANGDOCK/repositories" ]
+then
+  echo -e "$MAIN_PATH/etc/$LANGDOCK/repositories missing, default value setted\nDefault value: $LANGDOCK\n"
+  echo "$LANGDOCK" > "$MAIN_PATH/etc/$LANGDOCK/repositories"
+fi
+LANGDOCK_IMAGES=( $(cat $MAIN_PATH/etc/$LANGDOCK/repositories) )
+
+# Function to install a langdock version
+# Arguments
+#   1: full name with tag
+function install_langdock_version
+{
+  if [ "$1" ]
+  then
+    docker pull $1
+  elif [ -f ".${LANGDOCK}-version" ]
+  then
+    echo -e "$LANGDOCK version taken from file .${LANGDOCK}-version\n"
+    cat .${LANGDOCK}-version | xargs docker pull
+    langdock-local $1
+  else
+    echo "Please specify a $LANGDOCK version"
+  fi
+}
+
+# Function to get avaiables images from the repositories
+# Arguments
+#   1: image name
+function docker_tags {
+  image="$1"
+  tags=`wget -q https://registry.hub.docker.com/v1/repositories/${image}/tags -O -  | sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  | awk -F: '{print $3}'`
+
+  echo -e "${tags}\n"
+}
+
+# Function to list langdock versions from repositories
+# Arguments
+#   1: silent mode
+function list_langdock_versions {
+  [ -z $1 ] && ( echo "List of availables versions" )
+  for IMAGE in ${LANGDOCK_IMAGES[@]}
+  do
+    [ -z $1 ] && ( echo -e "\nIn $IMAGE repository" )
+    array=(`docker_tags $IMAGE`)
+    if [ -n "$1" ]; then
+      array=( "${array[@]/#/$IMAGE:}" )
+    fi
+    printf '%s\n' "${array[@]}"
+  done
+}
+
+# Function to generate versions list from repositories
+# Arguments
+#   1: array of elements
+function createmenu {
+  echo "Select a version to install"
+  select option; do # in "$@" is the default
+    if [ "$REPLY" -eq $# ];
+    then
+      echo "Exiting..."
+      break;
+    elif [ 1 -le "$REPLY" ] && [ "$REPLY" -le $(($#-1)) ];
+    then
+      echo "You selected $option which is option $REPLY"
+      echo "Installing.."
+      install_langdock_version $option
+      break;
+    else
+      echo "Incorrect Input: Select a number 1-$#"
+    fi
+  done
+}
+
+OPT=install
+
+# Parse arguments
+while true ; do
+  case "$1" in
+    -l|--list)
+      OPT=list
+      shift;;
+    --) shift ; break ;;
+    *) echo "Internal error!" ; exit 1 ;;
+  esac
+done
+
+LANGDOCK_VERSION=$1
+LANGDOCK_VERSION_FILE=`upsearch ".${LANGDOCK}-version"`
+
+# Show help if non arguments passed to script
+[ -z "$LANGDOCK_VERSION" -a -z "$LANGDOCK_VERSION_FILE" -a "$OPT" = "install" ] && ( langdock-help $COMMAND; exit 1)
+
+case "$OPT" in
+  install)
+    if [ -z $1 ]; then
+      LANGDOCK_VERSION=`cat $LANGDOCK_VERSION_FILE`
+      VERSIONS=(`list_langdock_versions true | grep $LANGDOCK_VERSION || true`)
+      [ "${#VERSIONS[@]}" -eq 0 ] && ( echo "$LANGDOCK: version not found: $LANGDOCK_VERSION"; exit 1)
+      VERSIONS=(${VERSIONS[@]} "exit")
+      createmenu "${VERSIONS[@]}"
+    else
+      echo "Installing $LANGDOCK_VERSION"
+      install_langdock_version $LANGDOCK_VERSION
+    fi
+    ;;
+  list)
+    list_langdock_versions
+  ;;
+esac

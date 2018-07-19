@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Summary: Configure the shell environment for phpdock
-# Usage: eval "$(phpdock init - [<shell>])"
+# Summary: Configure the shell environment for langdock
+# Usage: eval "$(langdock init - [<shell>])"
 
 set -e
-[ -n "$PHPDOCK_DEBUG" ] && set -x
+[ -n "$LANGDOCK_DEBUG" ] && set -x
 
-# Provide phpdock completions
+# Provide langdock completions
 if [ "$1" = "--complete" ]; then
   echo -
   echo bash
@@ -59,15 +59,15 @@ if [ -z "$print" ]; then
     ;;
   esac
 
-  { echo "# Load phpdock automatically by appending"
+  { echo "# Load langdock automatically by appending"
     echo "# the following to ${profile}:"
     echo
     case "$shell" in
     fish )
-      echo 'status --is-interactive; and source (phpdock init -|psub)'
+      echo 'status --is-interactive; and source (langdock init -|psub)'
       ;;
     * )
-      echo 'eval "$(phpdock init -)"'
+      echo 'eval "$(langdock init -)"'
       ;;
     esac
     echo
@@ -76,50 +76,50 @@ if [ -z "$print" ]; then
   exit 1
 fi
 
-mkdir -p "${PHPDOCK_ROOT}/"{shims,versions}
+mkdir -p "${LANGDOCK_ROOT}/"{shims,versions}
 
 case "$shell" in
 fish )
-  echo "set -gx PATH '${PHPDOCK_ROOT}/shims' \$PATH"
-  echo "set -gx PHPDOCK_SHELL $shell"
+  echo "set -gx PATH '${LANGDOCK_ROOT}/shims' \$PATH"
+  echo "set -gx LANGDOCK_SHELL $shell"
 ;;
 * )
-  echo 'export PATH="'${PHPDOCK_ROOT}'/shims:${PATH}"'
-  echo "export PHPDOCK_SHELL=$shell"
+  echo 'export PATH="'${LANGDOCK_ROOT}'/shims:${PATH}"'
+  echo "export LANGDOCK_SHELL=$shell"
 ;;
 esac
 
-completion="${root}/completions/phpdock.${shell}"
+completion="${root}/completions/langdock.${shell}"
 if [ -r "$completion" ]; then
   echo "source '$completion'"
 fi
 
-commands=(`phpdock-commands --sh`)
+commands=(`langdock-commands --sh`)
 case "$shell" in
 fish )
   cat <<EOS
-function phpdock
+function langdock
   set command \$argv[1]
   set -e argv[1]
 
   switch "\$command"
   case ${commands[*]}
-    source (phpdock "sh-\$command" \$argv|psub)
+    source (langdock "sh-\$command" \$argv|psub)
   case '*'
-    command phpdock "\$command" \$argv
+    command langdock "\$command" \$argv
   end
 end
 EOS
   ;;
 ksh )
   cat <<EOS
-function phpdock {
+function langdock {
   typeset command
 EOS
   ;;
 * )
   cat <<EOS
-phpdock() {
+langdock() {
   local command
 EOS
   ;;
@@ -135,9 +135,9 @@ cat <<EOS
 
   case "\$command" in
   ${commands[*]})
-    eval "\$(phpdock "sh-\$command" "\$@")";;
+    eval "\$(langdock "sh-\$command" "\$@")";;
   *)
-    command phpdock "\$command" "\$@";;
+    command langdock "\$command" "\$@";;
   esac
 }
 EOS

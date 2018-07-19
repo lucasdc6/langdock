@@ -2,12 +2,17 @@
 
 set -e
 
+if [ -z "$LANGDOCK" ]; then
+  echo "You need to specify a languaje in \$LANGDOCK"
+  exit 1
+fi
+
 if [ "$1" = "--debug" ]; then
-  export PHPDOCK_DEBUG=true
+  export LANGDOCK_DEBUG=true
   shift
 fi
 
-if [ -n "$PHPDOCK_DEBUG" ]; then
+if [ -n "$LANGDOCK_DEBUG" ]; then
   export PS4='+ [${BASH_SOURCE##*/}:${LINENO}] '
   set -x
 fi
@@ -18,13 +23,13 @@ export MAIN_PATH=`realpath $0 | xargs dirname | xargs dirname`
 
 abort() {
   { if [ "$#" -eq 0 ]; then cat -
-    else echo "phpdock $*"
+    else echo "langdock $*"
     fi
   } >&2
   exit 1
 }
 
-[ -z "$PHPDOCK_NATIVE_EXT" ] || abort "failed to load \`realpath' builtin"
+[ -z "$LANGDOCK_NATIVE_EXT" ] || abort "failed to load \`realpath' builtin"
 
 READLINK=$(type -p greadlink readlink | head -1)
 [ -n "$READLINK" ] || abort "cannot find readlink - are you missing GNU coreutils?"
@@ -47,22 +52,22 @@ abs_dirname() {
   cd "$cwd"
 }
 
-if [ -z "${PHPDOCK_ROOT}" ]; then
-  PHPDOCK_ROOT="${HOME}/.phpdock"
+if [ -z "${LANGDOCK_ROOT}" ]; then
+  LANGDOCK_ROOT="${HOME}/.langdock"
 else
-  PHPDOCK_ROOT="${PHPDOCK_ROOT%/}"
+  LANGDOCK_ROOT="${LANGDOCK_ROOT%/}"
 fi
-export PHPDOCK_ROOT
+export LANGDOCK_ROOT
 
-if [ -z "${PHPDOCK_DIR}" ]; then
-  PHPDOCK_DIR="$PWD"
+if [ -z "${LANGDOCK_DIR}" ]; then
+  LANGDOCK_DIR="$PWD"
 else
-  [[ $PHPDOCK_DIR == /* ]] || PHPDOCK_DIR="$PWD/$PHPDOCK_DIR"
-  cd "$PHPDOCK_DIR" 2>/dev/null || abort "cannot change working directory to \ `$PHPDOCK_DIR`"
-  PHPDOCK_DIR="$PWD"
+  [[ $LANGDOCK_DIR == /* ]] || LANGDOCK_DIR="$PWD/$LANGDOCK_DIR"
+  cd "$LANGDOCK_DIR" 2>/dev/null || abort "cannot change working directory to \ `$LANGDOCK_DIR`"
+  LANGDOCK_DIR="$PWD"
   cd $OLDPWD
 fi
-export PHPDOCK_DIR
+export LANGDOCK_DIR
 
 shopt -s nullglob
 
@@ -71,26 +76,26 @@ export PATH="$MAIN_PATH/libexec:${PATH}"
 command="$1"
 case "$command" in
   "" )
-    { phpdock-help
+    { langdock-help
     } | abort
     ;;
   -v | --version )
-    cat $PHPDOCKPATH/VERSION
+    cat $LANGDOCKPATH/VERSION
     echo
     ;;
   -h | --help )
-    exec phpdock-help
+    exec langdock-help
     ;;
   * )
-    command_path="$(command -v "phpdock-$command" || true)"
+    command_path="$(command -v "langdock-$command" || true)"
     [ -n "$command_path" ] || abort "no such command \`$command'"
 
     shift 1
     if [ "$1" = --help ]; then
       if [[ "$command" == "sh-"* ]]; then
-        echo "phpdock help \"$command\""
+        echo "langdock help \"$command\""
       else
-        exec phpdock-help "$command"
+        exec langdock-help "$command"
       fi
     else
       exec "$command_path" "$@"

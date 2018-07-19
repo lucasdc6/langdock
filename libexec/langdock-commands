@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Summary: List all available phpdock commands
-# Usage: phpdock commands [--sh|--no-sh]
+# Summary: List all available ${LANGDOCK}dock commands
+# Usage: ${LANGDOCK}dock commands [--sh|--no-sh]
 
 set -e
-[ -n "$PHPDOCK_DEBUG" ] && set -x
+[ -n "$LANGDOCK_DEBUG" ] && set -x
 
-# Provide phpdock completions
+# Provide langdock completions
 if [ "$1" = "--complete" ]; then
   if [ $# -eq 1 ]; then
     echo --sh
@@ -28,8 +28,8 @@ IFS=: paths=($PATH)
 shopt -s nullglob
 
 { for path in "${paths[@]}"; do
-    for command in "${path}/phpdock-"*; do
-      command="${command##*phpdock-}"
+    for command in "${path}/langdock-"*; do
+      command="${command##*langdock-}"
       if [ -n "$sh" ]; then
         if [ "${command:0:3}" = "sh-" ]; then
           echo "${command##sh-}"

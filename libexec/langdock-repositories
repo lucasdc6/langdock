@@ -1,8 +1,8 @@
 #!/bin/bash
 # Summary: Manage repositories
-# Usage: phpdock repositories -l/--list
-#        phpdock repositories -a/--add <repository>
-#        phpdock repositories -d/--delete <repository>
+# Usage: ${LANGDOCK}dock repositories -l/--list
+#        ${LANGDOCK}dock repositories -a/--add <repository>
+#        ${LANGDOCK}dock repositories -d/--delete <repository>
 #
 #  -l/--list    List all repositories
 #  -a/--add     Add a repository
@@ -10,16 +10,16 @@
 #
 # <repository> should be a string matching a docker registry
 #
-# More information at https://github.com/lucasdc6/phpdock#readme
+# More information at https://github.com/lucasdc6/langdock#readme
 
 
 set -e
-[ -n "$PHPDOCK_DEBUG" ] && set -x
+[ -n "$LANGDOCK_DEBUG" ] && set -x
 
 # Set config variables
 COMMAND=`basename $0 | cut -d- -f2`
 
-# Provide phpdock completions
+# Provide langdock completions
 if [ "$1" = "--complete" ]; then
   if [ $# -gt 1 ]; then
     exit 0
@@ -32,12 +32,12 @@ if [ "$1" = "--complete" ]; then
 fi
 
 # Avaiables repositories
-if [ ! -f "$MAIN_PATH/etc/repositories" ]
+if [ ! -f "$MAIN_PATH/etc/$LANGDOCK/repositories" ]
 then
-  echo -e "$MAIN_PATH/etc/repositories missing, default value setted\nDefault value: php\n"
-  echo "php" > "$MAIN_PATH/etc/repositories"
+  echo -e "$MAIN_PATH/etc/$LANGDOCK/repositories missing, default value setted\nDefault value: $LANGDOCK\n"
+  echo $LANGDOCK > "$MAIN_PATH/etc/$LANGDOCK/repositories"
 fi
-PHP_IMAGES=( $(cat $MAIN_PATH/etc/repositories) )
+LANGDOCK_IMAGES=( $(cat $MAIN_PATH/etc/$LANGDOCK/repositories) )
 
 # Function to delete an elements from array
 # Arguments
@@ -55,38 +55,38 @@ function delete_ary_elmt {
   return $status # return 0 if something was deleted; 1 if not
 }
 
-# Function to list all repos in file etc/repositories
+# Function to list all repos in file etc/<language>/repositories
 function list_repos
 {
-  [ ${#PHP_IMAGES[@]} -eq 0 ] && (echo -e "Not repositories found.\nPlease add a repository with the option $PROG --add REPOSITORY"; exit 1)
+  [ ${#LANGDOCK_IMAGES[@]} -eq 0 ] && (echo -e "Not repositories found.\nPlease add a repository with the option $PROG --add REPOSITORY"; exit 1)
   printf "Avaiables repositories:\n"
-  printf "\t* %s\n" "${PHP_IMAGES[@]}"
+  printf "\t* %s\n" "${LANGDOCK_IMAGES[@]}"
 }
 
-# Function to add a repo to array PHP_IMAGES and file etc/repositories
+# Function to add a repo to array LANGDOCK_IMAGES and file etc/<language>/repositories
 # Arguments
 #   1: repository name
 function add_repo
 {
-  if [[ "${PHP_IMAGES[@]}" =~ "${1}" ]]
+  if [[ "${LANGDOCK_IMAGES[@]}" =~ "${1}" ]]
   then
     echo "$1 already in use"
   else
-    PHP_IMAGES+=("$1")
-    printf "%s\n" "${PHP_IMAGES[@]}" > $MAIN_PATH/etc/repositories
+    LANGDOCK_IMAGES+=("$1")
+    printf "%s\n" "${LANGDOCK_IMAGES[@]}" > $MAIN_PATH/etc/$LANGDOCK/repositories
     echo "$1 added successfully"
   fi
 }
 
-# Function to delete a repo from array PHP_IMAGES and file etc/repositories
+# Function to delete a repo from array LANGDOCK_IMAGES and file etc/<language>/repositories
 # Arguments
 #   1: repository name
 function delete_repo
 {
-  if [[ "${PHP_IMAGES[@]}" =~ "${1}" ]]
+  if [[ "${LANGDOCK_IMAGES[@]}" =~ "${1}" ]]
   then
-    delete_ary_elmt $1 PHP_IMAGES
-    printf "%s\n" "${PHP_IMAGES[@]}" > $MAIN_PATH/etc/repositories
+    delete_ary_elmt $1 LANGDOCK_IMAGES
+    printf "%s\n" "${LANGDOCK_IMAGES[@]}" > $MAIN_PATH/etc/$LANGDOCK/repositories
     echo "$1 deleted successfully"
   else
     echo -e "$1 not found\n"
@@ -95,7 +95,7 @@ function delete_repo
 }
 
 # Show help if non arguments passed to script
-[ "$#" -eq 0 ] && ( phpdock-help $COMMAND; exit 1)
+[ "$#" -eq 0 ] && ( langdock-help $COMMAND; exit 1)
 
 # Config getopt
 TEMP=`getopt -o l,a:,d: --long list,add:,delete: -n $PROG -- "$@"`

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Summary: Display prefix for a $LANGDOCK docker version
+# Usage: ${LANGDOCK}dock prefix [<version>]
+#
+# Displays complete image name of a $LANGDOCK version. If no
+# version is given, `${LANGDOCK}dock prefix' displays the complete name
+# of the currently selected version.
+
+[ -n "$LANGDOCK_DEBUG" ] && set -x
+
+# Provide langdock completions
+if [ "$1" = "--complete" ]; then
+  if [ "$#" -eq 1 ]; then
+    echo system
+    echo --help
+  fi
+  exit 0
+fi
+
+if [ -n "$1" ]; then
+  LANGDOCK_DOCKER_IMAGE="$1"
+elif [ -z "$LANGDOCK_DOCKER_IMAGE" ]; then
+  LANGDOCK_DOCKER_IMAGE="$(langdock-version-name $PARAM)"
+fi
+
+if [ "$LANGDOCK_DOCKER_IMAGE" = "system" ]; then
+  whereis -b $LANGDOCK | awk '{print $2}'
+  exit 0
+fi
+
+containsElement () {
+  local e match="$1"
+  shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+LANGDOCK_PREFIX=(`docker images --format "{{.Repository}}:{{.Tag}}" | grep $LANGDOCK_DOCKER_IMAGE`)
+
+if ! containsElement $LANGDOCK_DOCKER_IMAGE ${LANGDOCK_PREFIX[@]} ; then
+  echo "$LANGDOCK: version \`${LANGDOCK_DOCKER_IMAGE}' not installed" >&2
+  exit 1
+fi
+
+echo $LANGDOCK_PREFIX
