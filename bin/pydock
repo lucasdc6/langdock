@@ -2,5 +2,6 @@
 
 export LANGDOCK=py
 export LANGDOCK_REPOSITORY=python
+export LANGDOCK_COMMAND=python
 mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
 $LANGDOCKPATH/libexec/langdock $@
