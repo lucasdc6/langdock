@@ -1,0 +1,21 @@
+#!/bin/bash
+
+LANGDOCK_COMMAND=${LANGDOCK_COMMAND:-$LANGDOCK}
+LANGDOCK_COMMAND_UPPER=`echo $LANGDOCK_COMMAND | tr a-z A-Z`
+
+cat > $LANGDOCKPATH/commands/$LANGDOCK_COMMAND <<COMMAND
+#!/bin/bash
+
+${LANGDOCK_COMMAND_UPPER}_CLI_DOCKER_IMAGE=\`${LANGDOCK}dock version-name\`
+
+if [ "\$${LANGDOCK_COMMAND_UPPER}_CLI_DOCKER_IMAGE" = "system" -o \$? -eq 1 ]; then
+  \$(whereis -b $LANGDOCK_COMMAND | awk '{print \$3}') \$@
+  exit 0
+fi
+
+docker run --rm -it -u `id -u \$USER`:`id -g \$USER` -v "\$PWD:\$PWD" -w "\$PWD" \$${LANGDOCK_COMMAND_UPPER}_CLI_DOCKER_IMAGE \$@
+COMMAND
+
+chmod +x $LANGDOCKPATH/commands/$LANGDOCK_COMMAND
+
+echo Command generated at $LANGDOCKPATH/commands/$LANGDOCK_COMMAND
