@@ -2,11 +2,7 @@
 
 set -e
 
-if [ -z "$LANGDOCK" ]; then
-  echo -e "Availables langdock languages:\n"
-  ls $LANGDOCKPATH/bin | grep dock | grep -vw langdock
-  exit 1
-fi
+export LANGDOCK=${LANGDOCK:-lang}
 
 if [ "$1" = "--debug" ]; then
   export LANGDOCK_DEBUG=true
@@ -24,7 +20,7 @@ export MAIN_PATH=`realpath $0 | xargs dirname | xargs dirname`
 
 abort() {
   { if [ "$#" -eq 0 ]; then cat -
-    else echo "langdock $*"
+    else echo "${LANGDOCK}dock $*"
     fi
   } >&2
   exit 1
