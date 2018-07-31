@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Summary: Manage $LANGDOCK plugins
+# Usage: $LANGDOCK_COMMAND plugins -a/--add <name>
+#        $LANGDOCK_COMMAND plugins -d/--delete <name>
+#        $LANGDOCK_COMMAND plugins -l/--list
+#        $LANGDOCK_COMMAND plugins --variables
+#
+# More information at https://github.com/lucasdc6/langdock#readme
+
+
+[ -n "$LANGDOCK_DEBUG" ] && set -x
+
+# Set config variables
+COMMAND=`basename $0 | cut -d- -f2`
+
+# Provide langdock completions
+if [ "$1" = "--complete" ]; then
+  echo --help
+  exit 0
+fi
+
+# Show help if non arguments passed to script
+[ "$#" -eq 0 ] && ( langdock-help $COMMAND; exit 1)
+
+function create_template
+{
+  cat > $1 <<FILE
+#!/usr/bin/env bash
+# Summary: $LANGDOCK_COMMAND $2 help
+# Usage: $LANGDOCK_COMMAND $2
+
+echo -e "$2 plugin\nFather, give me code!"
+echo "Check '$LANGDOCK_COMMAND $COMMAND --variables' for availables variables"
+echo "Or check $LANGDOCKPATH/libexec for the commands code!"
+FILE
+chmod +x $1
+}
+
+function show_variables
+{
+  cat <<VARIABLES
+List of availables variables in the plugins:
+  \$LANGDOCK            ==> Actual language       - value: $LANGDOCK
+  \$LANGDOCK_COMMAND    ==> Actual command        - value: $LANGDOCK_COMMAND
+  \$LANGDOCK_ROOT       ==> Langdock root path    - value: $LANGDOCK_ROOT
+  \$LANGDOCK_SHELL      ==> Langdock shell        - value: $LANGDOCK_SHELL
+  \$LANGDOCK_DIR        ==> Langdock actual dir   - value: $LANGDOCK_DIR
+  \$LANGDOCKPATH        ==> Langdock path         - value: $LANGDOCKPATH
+  \$LANGDOCKPATH_DEBUG  ==> Debug status          - value: $LANGDOCK_DEBUG
+  \$PROG                ==> Base program name     - value: $PROG
+VARIABLES
+}
+
+TEMP=`getopt -o l,a:,d: --long list,add:,delete:,variables -n $PROG -- "$@"`
+eval set -- "$TEMP"
+
+mkdir -p $LANGDOCKPATH/plugins/$LANGDOCK_COMMAND 2> /dev/null
+
+# Parse arguments
+while true; do
+  case "$1" in
+    -l|--list)
+      ls $LANGDOCKPATH/plugins/$LANGDOCK_COMMAND | grep "^$LANGDOCK_COMMAND-plugin"
+      shift
+      exit 0;;
+    -a|--add)
+      PLUGIN_PATH=$LANGDOCKPATH/plugins/$LANGDOCK_COMMAND
+      PLUGIN_NAME=${LANGDOCK_COMMAND}-plugin-$2
+      if [ -f "$PLUGIN_PATH/$PLUGIN_NAME" ]; then
+        echo -e "$PLUGIN_NAME already exists at $PLUGIN_PATH\n"
+        mv --backup=t "$PLUGIN_PATH/$PLUGIN_NAME" "$PLUGIN_PATH/DELETED-$PLUGIN_NAME"
+      fi
+      echo "Create plugin template at $PLUGIN_PATH/$PLUGIN_NAME"
+      create_template $PLUGIN_PATH/$PLUGIN_NAME $2
+      shift 2
+      exit 0;;
+    -d|--delete)
+      PLUGIN_PATH=$LANGDOCKPATH/plugins/$LANGDOCK_COMMAND
+      PLUGIN_NAME=${LANGDOCK_COMMAND}-plugin-$2
+      if [ -f "${PLUGIN_PATH}/$PLUGIN_NAME" ]; then
+        echo "Deleting plugin $2 ($PLUGIN_PATH)"
+        mv --backup=t "${PLUGIN_PATH}/$PLUGIN_NAME" "${PLUGIN_PATH}/DELETED-$PLUGIN_NAME"
+      else
+        echo "Plugin not found at $PLUGIN_PATH"
+      fi
+      shift 2
+      exit 0;;
+    --variables)
+      show_variables
+      exit 0;;
+    --) shift ; break ;;
+    *) echo "Internal error!" ; exit 1 ;;
+  esac
+done
+
