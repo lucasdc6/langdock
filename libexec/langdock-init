@@ -80,11 +80,11 @@ mkdir -p "${LANGDOCKPATH}/etc" "${LANGDOCKPATH}/commands"
 
 case "$shell" in
 fish )
-  echo "set -gx PATH '${LANGDOCK_ROOT}/shims' \$PATH"
+  echo "set -gx PATH '${LANGDOCK_ROOT}/plugins' \$PATH"
   echo "set -gx LANGDOCK_SHELL $shell"
 ;;
 * )
-  echo 'export PATH="'${LANGDOCK_ROOT}'/shims:${PATH}"'
+  echo 'export PATH="'${LANGDOCK_ROOT}'/plugins:${PATH}"'
   echo "export LANGDOCK_SHELL=$shell"
 ;;
 esac

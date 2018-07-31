@@ -32,7 +32,7 @@ fi
 
 command_path() {
   local command="$1"
-  command -v langdock-"$command" || command -v langdock-sh-"$command" || true
+  command -v langdock-"$command" || command -v langdock-sh-"$command" || command -v ${LANGDOCK_COMMAND}-plugin-$command|| true
 }
 
 extract_initial_comment_block() {

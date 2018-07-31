@@ -29,7 +29,7 @@ if langdock local $PARAM > /dev/null; then
   LANGDOCKVERSION=`upsearch ".$LANGDOCK-version"`
   echo `realpath $LANGDOCKVERSION`
 elif langdock global $PARAM > /dev/null; then
-  echo $MAIN_PATH/etc/$LANGDOCK/version
+  echo $LANGDOCKPATH/etc/$LANGDOCK/version
 else
   echo "No $LANGDOCK version setted"
   exit 1

@@ -20,14 +20,14 @@ if [ "$1" = "--complete" ]; then
   exit 0
 fi
 
-LANGDOCK_IMAGES=( $(cat $MAIN_PATH/etc/$LANGDOCK/repositories) )
+LANGDOCK_IMAGES=( $(cat $LANGDOCKPATH/etc/$LANGDOCK/repositories) )
 
 # Function to get installed versions
 function show_versions {
   for IMAGE in "${LANGDOCK_IMAGES[@]}"
   do
     docker images | awk -v image=$IMAGE '($1 == image) {print $1":"$2;}'
-  done | tee $MAIN_PATH/etc/$LANGDOCK/versions
+  done | tee $LANGDOCKPATH/etc/$LANGDOCK/versions
 }
 
 show_versions

@@ -25,7 +25,7 @@ if [ "$1" = "--complete" ]; then
   if echo $@ | grep -v "\-\-help" > /dev/null; then
     echo system
     echo --unset
-    [ -f $MAIN_PATH/etc/$LANGDOCK/versions ] && cat $MAIN_PATH/etc/$LANGDOCK/versions
+    [ -f $LANGDOCKPATH/etc/$LANGDOCK/versions ] && cat $LANGDOCKPATH/etc/$LANGDOCK/versions
   fi
   if [ "$#" -eq 1 ]; then
     echo --help
@@ -40,11 +40,11 @@ function change_global {
   if [ "$1" ]
   then
     langdock-prefix $1 > /dev/null
-    echo $1 > $MAIN_PATH/etc/$LANGDOCK/version
-    echo "Global $LANGDOCK version setted to $1 in file $MAIN_PATH/etc/$LANGDOCK/version"
-  elif [ -f "$MAIN_PATH/etc/$LANGDOCK/version" ]
+    echo $1 > $LANGDOCKPATH/etc/$LANGDOCK/version
+    echo "Global $LANGDOCK version setted to $1 in file $LANGDOCKPATH/etc/$LANGDOCK/version"
+  elif [ -f "$LANGDOCKPATH/etc/$LANGDOCK/version" ]
   then
-    cat $MAIN_PATH/etc/$LANGDOCK/version
+    cat $LANGDOCKPATH/etc/$LANGDOCK/version
   else
     echo "$PROG: no $LANGDOCK global version configured"
     exit 1
@@ -67,7 +67,7 @@ while true ; do
 done
 
 if [ "$ACTION" = "unset" ]; then
-  rm $MAIN_PATH/etc/$LANGDOCK/version
+  rm $LANGDOCKPATH/etc/$LANGDOCK/version
   exit 0
 fi
 

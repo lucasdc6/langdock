@@ -3,6 +3,7 @@
 set -e
 
 export LANGDOCK=${LANGDOCK:-lang}
+export LANGDOCK_COMMAND=${LANGDOCK}dock
 
 if [ "$1" = "--debug" ]; then
   export LANGDOCK_DEBUG=true
@@ -16,7 +17,6 @@ fi
 
 # Get the basename and main path of script
 export PROG=`basename $0`
-export MAIN_PATH=`realpath $0 | xargs dirname | xargs dirname`
 
 abort() {
   { if [ "$#" -eq 0 ]; then cat -
@@ -56,6 +56,8 @@ else
 fi
 export LANGDOCK_ROOT
 
+LANGDOCKPATH=${LANGDOCKPATH:-$LANGDOCK_ROOT}
+
 if [ -z "${LANGDOCK_DIR}" ]; then
   LANGDOCK_DIR="$PWD"
 else
@@ -68,7 +70,7 @@ export LANGDOCK_DIR
 
 shopt -s nullglob
 
-export PATH="$MAIN_PATH/libexec:${PATH}"
+export PATH="$LANGDOCKPATH/libexec:$LANGDOCKPATH/plugins/$LANGDOCK_COMMAND:${PATH}"
 
 command="$1"
 case "$command" in
@@ -84,7 +86,7 @@ case "$command" in
     exec langdock-help
     ;;
   * )
-    command_path="$(command -v "langdock-$command" || true)"
+    command_path="$(command -v "langdock-$command" || command -v "${LANGDOCK_COMMAND}-plugin-$command" || true)"
     [ -n "$command_path" ] || abort "no such command \`$command'"
 
     shift 1

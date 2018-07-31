@@ -34,12 +34,12 @@ fi
 LANGDOCK_REPOSITORY=${LANGDOCK_REPOSITORY:-$LANGDOCK}
 
 # Avaiables repositories
-if [ ! -f "$MAIN_PATH/etc/$LANGDOCK/repositories" ]
+if [ ! -f "$LANGDOCKPATH/etc/$LANGDOCK/repositories" ]
 then
-  echo -e "$MAIN_PATH/etc/$LANGDOCK/repositories missing, default value setted\nDefault value: $LANGDOCK_REPOSITORY\n"
-  echo $LANGDOCK_REPOSITORY > "$MAIN_PATH/etc/$LANGDOCK/repositories"
+  echo -e "$LANGDOCKPATH/etc/$LANGDOCK/repositories missing, default value setted\nDefault value: $LANGDOCK_REPOSITORY\n"
+  echo $LANGDOCK_REPOSITORY > "$LANGDOCKPATH/etc/$LANGDOCK/repositories"
 fi
-LANGDOCK_IMAGES=( $(cat $MAIN_PATH/etc/$LANGDOCK/repositories) )
+LANGDOCK_IMAGES=( $(cat $LANGDOCKPATH/etc/$LANGDOCK/repositories) )
 
 # Function to delete an elements from array
 # Arguments
@@ -75,7 +75,7 @@ function add_repo
     echo "$1 already in use"
   else
     LANGDOCK_IMAGES+=("$1")
-    printf "%s\n" "${LANGDOCK_IMAGES[@]}" > $MAIN_PATH/etc/$LANGDOCK/repositories
+    printf "%s\n" "${LANGDOCK_IMAGES[@]}" > $LANGDOCKPATH/etc/$LANGDOCK/repositories
     echo "$1 added successfully"
   fi
 }
@@ -88,7 +88,7 @@ function delete_repo
   if [[ "${LANGDOCK_IMAGES[@]}" =~ "${1}" ]]
   then
     delete_ary_elmt $1 LANGDOCK_IMAGES
-    printf "%s\n" "${LANGDOCK_IMAGES[@]}" > $MAIN_PATH/etc/$LANGDOCK/repositories
+    printf "%s\n" "${LANGDOCK_IMAGES[@]}" > $LANGDOCKPATH/etc/$LANGDOCK/repositories
     echo "$1 deleted successfully"
   else
     echo -e "$1 not found\n"

@@ -27,7 +27,7 @@ if [ "$1" = "--complete" ]; then
   if echo $@ | grep -v "\-\-help" > /dev/null; then
     echo system
     echo --unset
-    [ -f $MAIN_PATH/etc/$LANGDOCK/versions ] && cat $MAIN_PATH/etc/$LANGDOCK/versions
+    [ -f $LANGDOCKPATH/etc/$LANGDOCK/versions ] && cat $LANGDOCKPATH/etc/$LANGDOCK/versions
   fi
   if [ "$#" -eq 1 ]; then
     echo --help

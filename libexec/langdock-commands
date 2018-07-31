@@ -23,12 +23,13 @@ elif [ "$1" = "--no-sh" ]; then
   shift
 fi
 
-IFS=: paths=($PATH)
+IFS=: paths=($PATH $LANGDOCKPATH/plugins)
 
 shopt -s nullglob
 
 { for path in "${paths[@]}"; do
-    for command in "${path}/langdock-"*; do
+    search=(${path}/langdock-* ${path}/$LANGDOCK_COMMAND/${LANGDOCK_COMMAND}-plugin-*)
+    for command in ${search[*]}; do
       command="${command##*langdock-}"
       if [ -n "$sh" ]; then
         if [ "${command:0:3}" = "sh-" ]; then
@@ -39,6 +40,7 @@ shopt -s nullglob
           echo "${command##sh-}"
         fi
       else
+        command="${command##*${LANGDOCK_COMMAND}-plugin-}"
         echo "${command##sh-}"
       fi
     done

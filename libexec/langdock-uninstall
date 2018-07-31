@@ -19,7 +19,7 @@ COMMAND=`basename $0 | cut -d- -f2`
 # Provide langdock completions
 if [ "$1" = "--complete" ]; then
   if echo $@ ; then
-    cat $MAIN_PATH/etc/$LANGDOCK/versions
+    cat $LANGDOCKPATH/etc/$LANGDOCK/versions
   fi
   echo --force
   echo --help
