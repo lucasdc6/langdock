@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export LANGDOCK=java
-export LANGDOCK_REPOSITORY=openjdk
+export LANGDOCK=haskell
 mkdir -p $LANGDOCKPATH/etc/$LANGDOCK
 $LANGDOCKPATH/libexec/langdock $@
