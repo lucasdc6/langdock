@@ -1,10 +1,11 @@
 #!/bin/bash
 # Summary: Install a $LANGDOCK docker image from repositories
 # Usage: ${LANGDOCK}dock install <version>
-#        ${LANGDOCK}dock install -l/--list
+#        ${LANGDOCK}dock install -l/--list [filter]
 #
-#  -l/--list   List all available versions
-#              By default show $LANGDOCK versions
+#  -l/--list [filter]  List all available versions
+#                      With optional filter
+#                      By default show $LANGDOCK versions
 #
 # <version> should be a string matching a $LANGDOCK version known to $LANGDOCK
 # repositories
@@ -83,7 +84,7 @@ function docker_tags {
 # Arguments
 #   1: silent mode
 function list_langdock_versions {
-  [ -z $1 ] && ( echo "List of availables versions" )
+  ( ! $1 ) && ( echo -e "List of availables versions\n" )
   for IMAGE in ${LANGDOCK_IMAGES[@]}
   do
     [ -z $1 ] && ( echo -e "\nIn $IMAGE repository" )
@@ -91,7 +92,11 @@ function list_langdock_versions {
     if [ -n "$1" ]; then
       array=( "${array[@]/#/$IMAGE:}" )
     fi
-    printf '%s\n' "${array[@]}"
+    if [ -z $2 ]; then
+      printf '%s\n' "${array[@]}"
+    else
+      printf '%s\n' "${array[@]}" | grep $2
+    fi
   done
 }
 
@@ -109,7 +114,9 @@ function createmenu {
     then
       echo "You selected $option which is option $REPLY"
       echo "Installing.."
-      install_langdock_version $option
+      install_langdock_version $option > /dev/null
+      echo "Local version setted to $option"
+      echo $option > ".$LANGDOCK-version"
       break;
     else
       echo "Incorrect Input: Select a number 1-$#"
@@ -150,6 +157,6 @@ case "$OPT" in
     fi
     ;;
   list)
-    list_langdock_versions
+    list_langdock_versions false $1
   ;;
 esac
