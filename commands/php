@@ -1,0 +1,13 @@
+#!/bin/bash
+
+PHP_CLI_DOCKER_IMAGE=`phpdock version-name`
+
+if [ "$PHP_CLI_DOCKER_IMAGE" = "system" -o $? -eq 1 ]; then
+  $(whereis -b php | awk '{print $2}') $@
+  exit 0
+fi
+
+PHP_OPTIONS=${PHP_OPTIONS:- -d 'date.timezone=America/Argentina/Buenos_Aires' -d memory_limit=512M}
+PHP_CLI_DOCKER_RUN_OPTIONS=${PHP_CLI_DOCKER_RUN_OPTIONS:-'--add-host local.docker:172.17.0.1'}
+
+docker run --rm -it -u `id -u $USER`:`id -g $USER` -v "`pwd`:`pwd`" -w "`pwd`" $PHP_CLI_DOCKER_RUN_OPTIONS $PHP_CLI_DOCKER_IMAGE $PHP_OPTIONS $@

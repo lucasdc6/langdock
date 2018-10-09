@@ -1,0 +1,5 @@
+#!/bin/bash
+
+HASKELL_CLI_DOCKER_IMAGE=`haskelldock version-name`
+
+docker run --rm -it -u 1000:1000 -v "$PWD:$PWD" -w "$PWD" $HASKELL_CLI_DOCKER_IMAGE $@

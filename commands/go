@@ -1,0 +1,10 @@
+#!/bin/bash
+
+GO_CLI_DOCKER_IMAGE=`godock version-name`
+
+if [ "$GO_CLI_DOCKER_IMAGE" = "system" -o $? -eq 1 ]; then
+  $(whereis -b go | awk '{print $3}') $@
+  exit 0
+fi
+
+docker run --rm -it -u 1000:1000 -v "$PWD:$PWD" -w "$PWD" $GO_CLI_DOCKER_IMAGE $@

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+ELIXIR_DOCKER_IMAGE=`elixirdock version-name`
+
+if [ "$ELIXIR_DOCKER_IMAGE" = "system" -o $? -eq 1 ]; then
+  $(whereis -b elixir | awk '{print $2}') $@
+  exit 0
+fi
+
+docker run --rm -it -u `id -u $USER`:`id -g $USER` -v "`pwd`:`pwd`" -w "`pwd`" $ELIXIR_DOCKER_IMAGE elixir $@
