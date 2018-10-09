@@ -1,7 +1,7 @@
 #!/bin/bash
 # Summary: Install a $LANGDOCK docker image from repositories
-# Usage: ${LANGDOCK}dock install <version> [-a/--apache]
-#        ${LANGDOCK}dock install -l/--list [-a/--apache]
+# Usage: ${LANGDOCK}dock install <version>
+#        ${LANGDOCK}dock install -l/--list
 #
 #  -l/--list   List all available versions
 #              By default show $LANGDOCK versions

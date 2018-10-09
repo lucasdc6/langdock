@@ -2,8 +2,8 @@
 #
 # Summary: Set or show the shell-specific Ruby version
 #
-# Usage: langdock shell <version> [-a|--apache]
-#        langdock shell --unset [-a|--apache]
+# Usage: langdock shell <version>
+#        langdock shell --unset
 #
 # Sets a shell-specific Ruby version by setting the 'PHP_CLI_DOCKER_IMAGE'
 # environment variable in your shell. This version overrides local
@@ -23,12 +23,8 @@ set -e
 
 # Provide langdock completions
 if [ "$1" = "--complete" ]; then
-  if echo $@ | grep "\-\-apache" > /dev/null; then
-    cat $LANGDOCKPATH/etc/versions/apache
-    echo --unset
-  elif echo $@ | grep -v "\-\-help" > /dev/null; then
+  if echo $@ | grep -v "\-\-help" > /dev/null; then
     echo system
-    echo --apache
     echo --unset
     cat $LANGDOCKPATH/etc/versions/php
   fi
@@ -39,16 +35,12 @@ if [ "$1" = "--complete" ]; then
 fi
 
 # Config getopt
-TEMP=`getopt -o a,u --long apache,unset -n $PROG -- "$@"`
+TEMP=`getopt -o u --long unset -n $PROG -- "$@"`
 eval set -- "$TEMP"
-MODE=php
 
 # Parse arguments
 while true ; do
   case "$1" in
-    -a|--apache)
-      MODE=apache
-      shift;;
     --unset)
       ACTION=unset
       shift;;
@@ -64,11 +56,7 @@ function get_version {
   if [ -z "$1" ]; then
     echo "langdock: no shell-specific version configurated for $MODE" >&2
   else
-    if [ "$MODE" = "cli" ]; then
-      echo 'echo "$PHP_CLI_DOCKER_IMAGE"'
-    else
-      echo 'echo "$PHP_SERVER_DOCKER_IMAGE"'
-    fi
+    echo 'echo "$PHP_CLI_DOCKER_IMAGE"'
   fi
 }
 
