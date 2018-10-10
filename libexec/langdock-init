@@ -26,12 +26,14 @@ do
 done
 
 shell="$1"
-if [ -z "$shell" ]; then
+if [ -z "$shell" -o "$1" != "bash" -a "$1" != "zsh" -a "$1" != "fish" -a "$1" != "ksh" ] ; then
   shell="$(ps -p "$PPID" -o 'args=' 2>/dev/null || true)"
   shell="${shell%% *}"
   shell="${shell##-}"
   shell="${shell:-$SHELL}"
   shell="${shell##*/}"
+else
+  shift
 fi
 
 root="${0%/*}/.."
@@ -89,10 +91,15 @@ fish )
 ;;
 esac
 
-completion="${root}/completions/langdock.${shell}"
-if [ -r "$completion" ]; then
-  echo "source '$completion'"
-fi
+
+for LANG in $@; do
+  mkdir -p "${root}/completions/$LANG"
+  completion="${root}/completions/$LANG/$LANG.${shell}"
+  sed "s/langdock/$LANG/g" "${root}/completions/langdock.${shell}" > $completion
+  if [ -r "$completion" ]; then
+    echo "source '$completion'"
+  fi
+done
 
 commands=(`langdock-commands --sh`)
 case "$shell" in
