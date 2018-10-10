@@ -46,8 +46,12 @@ LANGDOCK_REPOSITORY=${LANGDOCK_REPOSITORY:-$LANGDOCK}
 # Avaiables repositories
 if [ ! -f "$LANGDOCKPATH/etc/$LANGDOCK/repositories" ]
 then
-  echo -e "$LANGDOCKPATH/etc/$LANGDOCK/repositories missing, default value setted\nDefault value: $LANGDOCK_REPOSITORY\n"
-  echo "$LANGDOCK_REPOSITORY" > "$LANGDOCKPATH/etc/$LANGDOCK/repositories"
+  echo -e "$LANGDOCKPATH/etc/$LANGDOCK/repositories missing\nDefault repositories:"
+  for REPOSITORY in `echo $LANGDOCK_REPOSITORY | tr : '\n'`; do
+    echo -e "\t* $REPOSITORY"
+    echo "$REPOSITORY" >> "$LANGDOCKPATH/etc/$LANGDOCK/repositories"
+    echo
+  done
 fi
 
 LANGDOCK_IMAGES=( $(cat $LANGDOCKPATH/etc/$LANGDOCK/repositories) )
@@ -87,11 +91,9 @@ function list_langdock_versions {
   ( ! $1 ) && ( echo -e "List of availables versions\n" )
   for IMAGE in ${LANGDOCK_IMAGES[@]}
   do
-    [ -z $1 ] && ( echo -e "\nIn $IMAGE repository" )
+    ( ! $1 ) && ( echo -e "\nIn $IMAGE repository" )
     array=(`docker_tags $IMAGE`)
-    if [ -n "$1" ]; then
-      array=( "${array[@]/#/$IMAGE:}" )
-    fi
+    array=( "${array[@]/#/$IMAGE:}" )
     if [ -z $2 ]; then
       printf '%s\n' "${array[@]}"
     else
