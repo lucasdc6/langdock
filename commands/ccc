@@ -3,14 +3,12 @@
 CCC_DOCKER_IMAGE=`cdock version-name`
 
 if [ "$CCC_DOCKER_IMAGE" = "system" -o $? -eq 1 ]; then
-  $(whereis -b gcc | awk '{print $2}') $@
+  if [ "$(whereis -b cc | awk '{print $2}')" = "$(realpath $0)" ]; then
+    echo "Not cc version setted"
+    exit 1
+  fi
+  $(whereis -b cc | awk '{print $2}') $@
   exit 0
 fi
 
-if echo $CCC_DOCKER_IMAGE | grep gcc > /dev/null; then
-  COMPILER=gcc
-else
-  COMPILER=clang
-fi
-
-docker run --rm -it -u `id -u $USER`:`id -g $USER` -v "`pwd`:`pwd`" -w "`pwd`" $CCC_DOCKER_IMAGE $COMPILER $@
+docker run --rm -it -u `id -u $USER`:`id -g $USER` -v "`pwd`:`pwd`" -w "`pwd`" $CCC_DOCKER_IMAGE cc $@

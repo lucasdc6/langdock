@@ -2,4 +2,13 @@
 
 HASKELL_CLI_DOCKER_IMAGE=`haskelldock version-name`
 
-docker run --rm -it -u 1000:1000 -v "$PWD:$PWD" -w "$PWD" $HASKELL_CLI_DOCKER_IMAGE $@
+if [ "$HASKELL_CLI_DOCKER_IMAGE" = "system" -o $? -eq 1 ]; then
+  if [ "$(whereis -b ghc | awk '{print $2}')" = "$(realpath $0)" ]; then
+    echo "Not ghc version setted"
+    exit 1
+  fi
+  $(whereis -b ghc | awk '{print $2}') $@
+  exit 0
+fi
+
+docker run --rm -it -u 1000:1000 -v "$PWD:$PWD" -w "$PWD" $HASKELL_CLI_DOCKER_IMAGE ghc $@

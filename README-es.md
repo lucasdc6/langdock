@@ -78,7 +78,7 @@ Por ejemplo, para agregar el repositorio oficial de php, solo hace falta
 ejecutar:
 
 ```bash
-  $ phpdock repositories --add php
+  $ langdock repositories --add php
 ```
 
 ## Variables de ambiente

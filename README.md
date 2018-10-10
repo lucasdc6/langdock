@@ -1,6 +1,6 @@
 # langdock
 
-phpdock is a languages's version manager, powered with
+langdock is a languages's version manager, powered with
 [Docker](https://github.com/docker), using principally the
 [Dockerhub](https://hub.docker.com/)
 
@@ -73,7 +73,7 @@ Eg:
 Add the oficial php repository (added by default)
 
 ```bash
-  $ phpdock repositories --add php
+  $ langdock repositories --add php
 ```
 
 ## Environment variables
@@ -122,7 +122,7 @@ Add a new language version:
    Eg, we need the php 7.2.0 from oficial repository
 
    ```bash
-    phpdock install php:7.2.0-cli
+    langdock install php:7.2.0-cli
    ```
 
 ### Using .language-version file

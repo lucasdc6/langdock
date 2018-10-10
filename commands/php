@@ -1,8 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 PHP_CLI_DOCKER_IMAGE=`phpdock version-name`
 
 if [ "$PHP_CLI_DOCKER_IMAGE" = "system" -o $? -eq 1 ]; then
+  if [ "$(whereis -b php | awk '{print $2}')" = "$(realpath $0)" ]; then
+    echo "Not php version setted"
+    exit 1
+  fi
+  echo "system version"
   $(whereis -b php | awk '{print $2}') $@
   exit 0
 fi
