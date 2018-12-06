@@ -12,6 +12,8 @@ set -e
 # Set config variables
 COMMAND=`basename $0 | cut -d- -f2`
 
+touch $LANGDOCK_ROOT/etc/$LANGDOCK/repositories
+
 # Provide langdock completions
 if [ "$1" = "--complete" ]; then
   if [ "$#" -eq 1 ]; then
@@ -30,4 +32,14 @@ function show_versions {
   done | tee $LANGDOCKPATH/etc/$LANGDOCK/versions
 }
 
-show_versions
+VERSIONS=`show_versions`
+
+if [ -z "$VERSIONS" ]; then
+  cat <<HELP
+No versions availables
+
+Try with $LANGDOCK_COMMAND install <version>
+HELP
+else
+  printf '%s\n' "${VERSIONS[@]}"
+fi
