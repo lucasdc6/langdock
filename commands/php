@@ -15,4 +15,8 @@ fi
 PHP_OPTIONS=${PHP_OPTIONS:- -d 'date.timezone=America/Argentina/Buenos_Aires' -d memory_limit=512M}
 PHP_CLI_DOCKER_RUN_OPTIONS=${PHP_CLI_DOCKER_RUN_OPTIONS:-'--add-host local.docker:172.17.0.1'}
 
-docker run --rm -it -u `id -u $USER`:`id -g $USER` -v "`pwd`:`pwd`" -w "`pwd`" $PHP_CLI_DOCKER_RUN_OPTIONS $PHP_CLI_DOCKER_IMAGE $PHP_OPTIONS $@
+if [ "$1" = "-a" ]; then
+  PHP_CLI_DOCKER_RUN_OPTIONS="$PHP_CLI_DOCKER_RUN_OPTIONS -t"
+fi
+
+docker run --rm -i -u `id -u $USER`:`id -g $USER` --network=host -v "`pwd`:`pwd`" -w "`pwd`" $PHP_CLI_DOCKER_RUN_OPTIONS $PHP_CLI_DOCKER_IMAGE $PHP_OPTIONS $@
