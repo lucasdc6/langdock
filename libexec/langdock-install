@@ -54,7 +54,23 @@ then
   done
 fi
 
-LANGDOCK_IMAGES=( $(cat $LANGDOCKPATH/etc/$LANGDOCK/repositories) )
+LANGDOCK_REPOSITORIES=( $(cat $LANGDOCKPATH/etc/$LANGDOCK/repositories) )
+
+# Function to search a string in array
+# Arguments:
+#   1: word
+#   2: array
+function includes
+{
+  WORD=$1
+  shift
+  for ELEM in $@; do
+    if [ "$ELEM" = "$WORD" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
 
 # Function to install a langdock version
 # Arguments
@@ -89,7 +105,7 @@ function docker_tags {
 #   1: silent mode
 function list_langdock_versions {
   ( ! $1 ) && ( echo -e "List of availables versions\n" )
-  for IMAGE in ${LANGDOCK_IMAGES[@]}
+  for IMAGE in ${LANGDOCK_REPOSITORIES[@]}
   do
     ( ! $1 ) && ( echo -e "\nIn $IMAGE repository" )
     array=(`docker_tags $IMAGE`)
@@ -154,8 +170,13 @@ case "$OPT" in
       VERSIONS=(${VERSIONS[@]} "exit")
       createmenu "${VERSIONS[@]}"
     else
-      echo "Installing $LANGDOCK_VERSION"
-      install_langdock_version $LANGDOCK_VERSION
+      echo "Searching $LANGDOCK_VERSION in repositories"
+      if includes $LANGDOCK_VERSION `list_langdock_versions true`; then
+        echo "Installing $LANGDOCK_VERSION"
+        install_langdock_version $LANGDOCK_VERSION
+      else
+        echo "$LANGDOCK_VERSION not found in repositories"
+      fi
     fi
     ;;
   list)
