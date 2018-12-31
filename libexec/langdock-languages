@@ -1,0 +1,9 @@
+#!/bin/bash
+# Summary: Display availables languages
+
+echo -e "Laguange's commands availables in langdock\n"
+for LANG in `ls $LANGDOCK_ROOT/bin`; do
+  if [ $LANG != $LANGDOCK ]; then
+    echo -e "\t- $LANG"
+  fi
+done
