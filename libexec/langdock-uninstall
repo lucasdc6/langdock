@@ -1,4 +1,4 @@
-#!/bin/bash
+#!//usr/bin/env bash
 # Summary: Uninstall a specific $LANGDOCK version
 # Usage: ${LANGDOCK}dock uninstall
 #

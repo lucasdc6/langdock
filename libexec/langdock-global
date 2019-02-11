@@ -1,4 +1,4 @@
-#!/bin/bash
+#!//usr/bin/env bash
 # Summary: Set or show the global $LANGDOCK version
 # Usage: ${LANGDOCK}dock global
 #        ${LANGDOCK}dock global <version>

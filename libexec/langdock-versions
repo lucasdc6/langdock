@@ -1,4 +1,4 @@
-#!/bin/bash
+#!//usr/bin/env bash
 # Summary: List all $LANGDOCK versions available to ${LANGDOCK}dock
 # Usage: ${LANGDOCK}dock versions
 #
