@@ -107,7 +107,7 @@ print_summary() {
   eval "$(documentation_for "$command")"
 
   if [ -n "$summary" ]; then
-    printf "   %-15s   %s\n" "$command" "$summary"
+    printf "   %-18s   %s\n" "$command" "$summary"
   fi
 }
 
@@ -159,7 +159,7 @@ if [ -z "$1" ] || [ "$1" == "langdock" ]; then
   [ -z "$usage" ] || exit
   echo
   echo "Some useful langdock commands are:"
-  print_summaries commands local global shell install uninstall repositories version versions
+  print_summaries commands local global shell install uninstall repositories generate-command version versions
   echo
   echo "See \`${LANGDOCK}dock help <command>' for information on a specific command."
   echo "For full documentation, see: https://github.com/lucasdc6/langdock#readme"
