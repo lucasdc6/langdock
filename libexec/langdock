@@ -72,11 +72,6 @@ shopt -s nullglob
 
 export PATH="$LANGDOCKPATH/libexec:$LANGDOCKPATH/plugins/$LANGDOCK_COMMAND:${PATH}"
 
-if [ "$LANGDOCK" == "lang" -a "$LANGDOCK_DEBUG" != "true" ]; then
-  langdock-languages
-  exit 0
-fi
-
 command="$1"
 case "$command" in
   "" )
